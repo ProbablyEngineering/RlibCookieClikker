@@ -1,96 +1,57 @@
-#include <iostream>
-#include <cmath>
-#include <thread>
-#include <chrono>
+#include "raylib.h"
+#include <raymath.h>
 
-class CookieClicker {
-private:
-    double cookies;
-    double clickPower;
-    double cookiesPerSecond;
-    double upgradeCost;
-    double automationCost;
+#define SCREEN_WIDTH 800
+#define SCREEN_HEIGHT 450
+#define WINDOW_TITLE "Cookie Clicker"
 
-public:
-    CookieClicker() : cookies(0), clickPower(1), cookiesPerSecond(0), upgradeCost(10), automationCost(50) {}
+int main(void)
+{
+    // Initialize the game state
+    int cookieCount = 0;
 
-    void click() {
-        cookies += clickPower;
-        std::cout << "You clicked! Cookies: " << cookies << "\n";
-    }
+    // Initialize Raylib window
+    InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, WINDOW_TITLE);
+    SetTargetFPS(60);
 
-    void upgradeClickPower() {
-        if (cookies >= upgradeCost) {
-            cookies -= upgradeCost;
-            clickPower += 1;
-            upgradeCost *= 1.5;
-            std::cout << "Upgraded click power! New power: " << clickPower << ", Next upgrade cost: " << upgradeCost << "\n";
-        } else {
-            std::cout << "Not enough cookies for upgrade! Need: " << upgradeCost - cookies << " more.\n";
-        }
-    }
+    // Define cookie button properties
+    Vector2 cookiePos = { SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 };
+    float cookieRadius = 50.0f;
+    Color cookieColor = BROWN;
 
-    void buyAutomation() {
-        if (cookies >= automationCost) {
-            cookies -= automationCost;
-            cookiesPerSecond += 1;
-            automationCost *= 2;
-            std::cout << "Automation added! Generating " << cookiesPerSecond << " cookies/second. Next automation cost: " << automationCost << "\n";
-        } else {
-            std::cout << "Not enough cookies for automation! Need: " << automationCost - cookies << " more.\n";
-        }
-    }
-
-    void generateCookies() {
-        cookies += cookiesPerSecond;
-    }
-
-    void displayStatus() const {
-        std::cout << "\n--- Current Status ---\n";
-        std::cout << "Cookies: " << cookies << "\n";
-        std::cout << "Click Power: " << clickPower << "\n";
-        std::cout << "Cookies per Second: " << cookiesPerSecond << "\n";
-        std::cout << "Upgrade Cost: " << upgradeCost << "\n";
-        std::cout << "Automation Cost: " << automationCost << "\n";
-    }
-};
-
-int main() {
-    CookieClicker game;
-    char choice;
-
-    std::cout << "Welcome to Cookie Clicker!\n";
-
-    while (true) {
-        game.displayStatus();
-        std::cout << "Choose an action: (C)lick, (U)pgrade, (A)utomate, (Q)uit: ";
-        std::cin >> choice;
-
-        switch (choice) {
-            case 'C':
-            case 'c':
-                game.click();
-                break;
-            case 'U':
-            case 'u':
-                game.upgradeClickPower();
-                break;
-            case 'A':
-            case 'a':
-                game.buyAutomation();
-                break;
-            case 'Q':
-            case 'q':
-                std::cout << "Exiting game. Thanks for playing!\n";
-                return 0;
-            default:
-                std::cout << "Invalid choice! Please try again.\n";
+    // Main game loop
+    while (!WindowShouldClose())
+    {
+        // Check for click on the circle
+        if (IsMouseButtonPressed(MOUSE_LEFT_BUTTON))
+        {
+            Vector2 mousePos = GetMousePosition();
+            float distance = Vector2Distance(mousePos, cookiePos);
+            if (distance <= cookieRadius)
+            {
+                cookieCount++; // Increment cookie count on click
+            }
         }
 
-        // Simulate idle cookie generation
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-        game.generateCookies();
+        // Draw the game
+        BeginDrawing();
+
+        ClearBackground(RAYWHITE);
+
+        // Draw the cookie (circle)
+        DrawCircleV(cookiePos, cookieRadius, cookieColor);
+
+        // Display the cookie count
+        const char* cookieText = TextFormat("Cookies: %d", cookieCount);
+        int fontSize = 20;
+        int textWidth = MeasureText(cookieText, fontSize);
+        DrawText(cookieText, SCREEN_WIDTH / 2 - textWidth / 2, 50, fontSize, BLACK);
+
+        EndDrawing();
     }
+
+    // Close the window and clean up resources
+    CloseWindow();
 
     return 0;
 }
