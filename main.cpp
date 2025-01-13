@@ -3,9 +3,9 @@
 #include <vector>
 #include <string>
 
-#define SCREEN_WIDTH 800
+#define SCREEN_WIDTH 800 
 #define SCREEN_HEIGHT 450
-#define WINDOW_TITLE "Cookie Clicker"
+#define WINDOW_TITLE "Cookie Clicker" 
 
 struct Upgrade {
     std::string name;
