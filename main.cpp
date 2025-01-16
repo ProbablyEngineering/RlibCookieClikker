@@ -8,7 +8,7 @@
 #define WINDOW_TITLE "Cookie Clicker" 
 
 struct Upgrade {
-    std::string name;
+    std::string name; 
     float cost;
     int effect;
     bool isAutomation; // Whether this upgrade is for automation
